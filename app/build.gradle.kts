@@ -71,7 +71,6 @@ dependencies {
     implementation("androidx.room:room-ktx:2.8.5")
     kapt("androidx.room:room-compiler:2.8.5")
 
-    testImplementation(project(":domain"))
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.jetbrains.kotlin:kotlin-test:2.2.20")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
