@@ -1,0 +1,10 @@
+# Created by GitHub Copilot for Android project generation.
+.gradle/
+local.properties
+.idea/
+*.iml
+/build
+**/build/
+*.keystore
+*.jks
+.DS_Store
