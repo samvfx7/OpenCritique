@@ -1,0 +1,8 @@
+{
+  "name": "OpenCritique",
+  "description": "Local-first fitness tracking and training progression app with 12 gemstone rank tiers, customizable workouts, and habit tracking.",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
