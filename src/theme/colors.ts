@@ -1,30 +1,30 @@
 export const OCColors = {
   // Background
-  Background: '#0B0A0F',
+  Background: '#0A0A0C',
 
   // Surfaces
-  Surface1: '#121117',
-  Surface2: '#18161E',
-  Surface3: '#211E29',
+  Surface1: '#121214',
+  Surface2: '#161619',
+  Surface3: '#18181B',
 
   // Text
-  TextPrimary: '#F5F3F8',
-  TextSecondary: '#A7A3AF',
-  TextTertiary: '#77737F',
+  TextPrimary: '#FFFFFF',
+  TextSecondary: '#A1A1AA',
+  TextTertiary: '#71717A',
 
   // Accent
-  PurpleAccent: '#7C5CFF',
-  PurpleSecondary: '#A58CFF',
+  PurpleAccent: '#8B5CF6',
+  PurpleSecondary: '#A78BFA',
 
   // Semantic
-  Success: '#6FA876',
-  Warning: '#D4A548',
-  Error: '#C7584F',
+  Success: '#8B5CF6',
+  Warning: '#8B5CF6',
+  Error: '#EF4444',
 
   // Borders
-  BorderSubtle: '#2A2733',
-  BorderDefault: '#3A3744',
+  BorderSubtle: 'rgba(255, 255, 255, 0.08)',
+  BorderDefault: 'rgba(255, 255, 255, 0.15)',
 
   // Disabled state
-  Disabled: '#4A4755',
+  Disabled: '#27272A',
 } as const;

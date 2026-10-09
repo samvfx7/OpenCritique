@@ -1,5 +1,43 @@
 export type MeasurementType = 'REPS' | 'WEIGHT_REPS' | 'DURATION' | 'DISTANCE';
 
+export type TrainingGoal =
+  | 'STRENGTH'
+  | 'MUSCLE_GROWTH'
+  | 'GENERAL_FITNESS'
+  | 'ENDURANCE'
+  | 'CALISTHENICS'
+  | 'SPORT_PERFORMANCE';
+
+export type ExperienceLevel = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
+
+export type TrainingLocation = 'HOME_NO_EQUIPMENT' | 'HOME_WITH_EQUIPMENT' | 'GYM';
+
+export type AvailableEquipment =
+  | 'NONE'
+  | 'DUMBBELLS'
+  | 'RESISTANCE_BANDS'
+  | 'PULL_UP_BAR'
+  | 'BENCH'
+  | 'BARBELL'
+  | 'CABLES'
+  | 'KETTLEBELL';
+
+export type PhysicalLimitation =
+  | 'KNEE_PAIN'
+  | 'SHOULDER_IMPINGEMENT'
+  | 'LOWER_BACK'
+  | 'WRIST_DISCOMFORT'
+  | 'NONE';
+
+export type DayOfWeek =
+  | 'MONDAY'
+  | 'TUESDAY'
+  | 'WEDNESDAY'
+  | 'THURSDAY'
+  | 'FRIDAY'
+  | 'SATURDAY'
+  | 'SUNDAY';
+
 export type WorkoutDifficulty =
   | 'LEG_DAY'
   | 'UPPER_BODY'
@@ -24,6 +62,9 @@ export interface WorkoutExercise {
   order: number;
   sets: WorkoutSet[];
   note?: string | null;
+  instructions?: string | null;
+  alternative?: string | null;
+  restSeconds?: number | null;
 }
 
 export interface Workout {
@@ -41,7 +82,68 @@ export interface Exercise {
   measurementType: MeasurementType;
   muscleGroup?: string | null;
   notes?: string | null;
+  instructions?: string | null;
+  alternative?: string | null;
+  equipmentRequired?: AvailableEquipment;
+  defaultRestSeconds?: number;
   isCustom?: boolean;
+}
+
+export interface ProgramScheduleDay {
+  dayOfWeek: DayOfWeek;
+  dayName: string;
+  isRestDay: boolean;
+  focusTitle: string;
+  workoutId?: string | null;
+  approximateMinutes: number;
+}
+
+export interface WeeklyProgram {
+  id: string;
+  name: string;
+  goal: TrainingGoal;
+  experience: ExperienceLevel;
+  location: TrainingLocation;
+  equipment: AvailableEquipment[];
+  sessionDurationMinutes: number;
+  daysPerWeek: number;
+  selectedDays: DayOfWeek[];
+  limitations: PhysicalLimitation[];
+  defaultRestSeconds: number;
+  schedule: ProgramScheduleDay[];
+  createdAtEpochMillis: number;
+  updatedAtEpochMillis: number;
+  isActive: boolean;
+}
+
+export interface ProgramSetupInput {
+  goal: TrainingGoal;
+  secondaryGoals?: TrainingGoal[];
+  experience: ExperienceLevel;
+  location: TrainingLocation;
+  equipment: AvailableEquipment[];
+  daysPerWeek: number;
+  selectedDays: DayOfWeek[];
+  sessionDurationMinutes: number;
+  limitations: PhysicalLimitation[];
+  defaultRestSeconds: number;
+  dislikedExercises?: string[];
+  preferredStyle?: string;
+}
+
+export interface UserPreferences {
+  primaryGoal: TrainingGoal;
+  secondaryGoals?: TrainingGoal[];
+  experience: ExperienceLevel;
+  daysPerWeek: number;
+  selectedDays: DayOfWeek[];
+  sessionDurationMinutes: number;
+  location: TrainingLocation;
+  equipment: AvailableEquipment[];
+  limitations: PhysicalLimitation[];
+  dislikedExercises?: string[];
+  preferredStyle?: string;
+  completedAtEpochMillis?: number;
 }
 
 export type RankTierKey =

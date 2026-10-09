@@ -3,10 +3,12 @@ import {
   Habit,
   HabitCompletion,
   TrainingProgram,
+  WeeklyProgram,
   XpEvent,
   HABIT_XP_POLICY,
   HabitDifficulty,
   TimeOfDay,
+  UserPreferences,
 } from '../model/types';
 import { WorkoutXpPolicy } from '../xp/WorkoutXpPolicy';
 
@@ -16,8 +18,12 @@ const STORAGE_KEY_COMPLETIONS = 'opencritique_habit_completions';
 const STORAGE_KEY_WORKOUTS = 'opencritique_workouts';
 const STORAGE_KEY_ACTIVE_WORKOUT_ID = 'opencritique_active_workout_id';
 const STORAGE_KEY_PROGRAMS = 'opencritique_programs';
+const STORAGE_KEY_WEEKLY_PROGRAM = 'opencritique_weekly_program';
 const STORAGE_KEY_RECENT_ACTIVITY = 'opencritique_recent_activity';
 const STORAGE_KEY_COMPLETED_WORKOUTS_COUNT = 'opencritique_completed_workouts_count';
+const STORAGE_KEY_COMPLETED_SESSION_IDS = 'opencritique_completed_session_ids';
+const STORAGE_KEY_ONBOARDING_COMPLETED = 'opencritique_onboarding_completed';
+const STORAGE_KEY_USER_PREFERENCES = 'opencritique_user_preferences';
 
 export interface RecentActivity {
   id: string;
@@ -152,20 +158,41 @@ const DEFAULT_RECENT_ACTIVITIES: RecentActivity[] = [
   { id: 'activity-3', title: 'Full Body completed', date: 'Monday', xpEarned: 150 },
 ];
 
+const memoryStore: Record<string, string> = {};
+
+function storageGet(key: string): string | null {
+  if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
+    return localStorage.getItem(key);
+  }
+  return memoryStore[key] ?? null;
+}
+
+function storageSet(key: string, value: string): void {
+  if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
+    localStorage.setItem(key, value);
+  }
+  memoryStore[key] = value;
+}
+
+function storageRemove(key: string): void {
+  if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
+    localStorage.removeItem(key);
+  }
+  delete memoryStore[key];
+}
+
 export const LocalStorageService = {
   isReady(): boolean {
-    return typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
+    return true;
   },
 
   getTotalXp(): number {
-    if (!this.isReady()) return 0;
-    const val = localStorage.getItem(STORAGE_KEY_XP);
+    const val = storageGet(STORAGE_KEY_XP);
     return val ? parseInt(val, 10) : 0;
   },
 
   setTotalXp(xp: number): void {
-    if (!this.isReady()) return;
-    localStorage.setItem(STORAGE_KEY_XP, xp.toString());
+    storageSet(STORAGE_KEY_XP, xp.toString());
   },
 
   addXp(amount: number, title?: string): number {
@@ -186,10 +213,9 @@ export const LocalStorageService = {
   },
 
   getHabits(): Habit[] {
-    if (!this.isReady()) return DEFAULT_HABITS;
-    const data = localStorage.getItem(STORAGE_KEY_HABITS);
+    const data = storageGet(STORAGE_KEY_HABITS);
     if (!data) {
-      localStorage.setItem(STORAGE_KEY_HABITS, JSON.stringify(DEFAULT_HABITS));
+      storageSet(STORAGE_KEY_HABITS, JSON.stringify(DEFAULT_HABITS));
       return DEFAULT_HABITS;
     }
     try {
@@ -200,8 +226,7 @@ export const LocalStorageService = {
   },
 
   saveHabits(habits: Habit[]): void {
-    if (!this.isReady()) return;
-    localStorage.setItem(STORAGE_KEY_HABITS, JSON.stringify(habits));
+    storageSet(STORAGE_KEY_HABITS, JSON.stringify(habits));
   },
 
   createHabit(name: string, difficulty: HabitDifficulty, timeOfDay: TimeOfDay): Habit {
@@ -222,16 +247,13 @@ export const LocalStorageService = {
     const habits = this.getHabits().filter((h) => h.id !== habitId);
     this.saveHabits(habits);
     const completions = this.getHabitCompletions().filter((c) => c.habitId !== habitId);
-    if (this.isReady()) {
-      localStorage.setItem(STORAGE_KEY_COMPLETIONS, JSON.stringify(completions));
-    }
+    storageSet(STORAGE_KEY_COMPLETIONS, JSON.stringify(completions));
   },
 
   getHabitCompletions(): HabitCompletion[] {
-    if (!this.isReady()) return DEFAULT_COMPLETIONS;
-    const data = localStorage.getItem(STORAGE_KEY_COMPLETIONS);
+    const data = storageGet(STORAGE_KEY_COMPLETIONS);
     if (!data) {
-      localStorage.setItem(STORAGE_KEY_COMPLETIONS, JSON.stringify(DEFAULT_COMPLETIONS));
+      storageSet(STORAGE_KEY_COMPLETIONS, JSON.stringify(DEFAULT_COMPLETIONS));
       return DEFAULT_COMPLETIONS;
     }
     try {
@@ -253,7 +275,7 @@ export const LocalStorageService = {
     if (existingIndex >= 0) {
       // Uncomplete
       completions.splice(existingIndex, 1);
-      localStorage.setItem(STORAGE_KEY_COMPLETIONS, JSON.stringify(completions));
+      storageSet(STORAGE_KEY_COMPLETIONS, JSON.stringify(completions));
       this.addXp(-xpReward);
       return { completed: false, xpDelta: -xpReward };
     } else {
@@ -263,17 +285,16 @@ export const LocalStorageService = {
         habitId,
         completedAtEpochMillis: Date.now(),
       });
-      localStorage.setItem(STORAGE_KEY_COMPLETIONS, JSON.stringify(completions));
+      storageSet(STORAGE_KEY_COMPLETIONS, JSON.stringify(completions));
       this.addXp(xpReward, `${habit.name} completed`);
       return { completed: true, xpDelta: xpReward };
     }
   },
 
   getWorkouts(): Workout[] {
-    if (!this.isReady()) return [DEFAULT_WORKOUT];
-    const data = localStorage.getItem(STORAGE_KEY_WORKOUTS);
+    const data = storageGet(STORAGE_KEY_WORKOUTS);
     if (!data) {
-      localStorage.setItem(STORAGE_KEY_WORKOUTS, JSON.stringify([DEFAULT_WORKOUT]));
+      storageSet(STORAGE_KEY_WORKOUTS, JSON.stringify([DEFAULT_WORKOUT]));
       return [DEFAULT_WORKOUT];
     }
     try {
@@ -289,17 +310,15 @@ export const LocalStorageService = {
   },
 
   saveWorkout(workout: Workout): void {
-    if (!this.isReady()) return;
     const list = this.getWorkouts().filter((w) => w.id !== workout.id);
     list.unshift(workout);
-    localStorage.setItem(STORAGE_KEY_WORKOUTS, JSON.stringify(list));
+    storageSet(STORAGE_KEY_WORKOUTS, JSON.stringify(list));
   },
 
   getRecentActivities(): RecentActivity[] {
-    if (!this.isReady()) return DEFAULT_RECENT_ACTIVITIES;
-    const data = localStorage.getItem(STORAGE_KEY_RECENT_ACTIVITY);
+    const data = storageGet(STORAGE_KEY_RECENT_ACTIVITY);
     if (!data) {
-      localStorage.setItem(STORAGE_KEY_RECENT_ACTIVITY, JSON.stringify(DEFAULT_RECENT_ACTIVITIES));
+      storageSet(STORAGE_KEY_RECENT_ACTIVITY, JSON.stringify(DEFAULT_RECENT_ACTIVITIES));
       return DEFAULT_RECENT_ACTIVITIES;
     }
     try {
@@ -310,34 +329,102 @@ export const LocalStorageService = {
   },
 
   addRecentActivity(activity: RecentActivity): void {
-    if (!this.isReady()) return;
     const acts = this.getRecentActivities();
     acts.unshift(activity);
-    localStorage.setItem(STORAGE_KEY_RECENT_ACTIVITY, JSON.stringify(acts.slice(0, 15)));
+    storageSet(STORAGE_KEY_RECENT_ACTIVITY, JSON.stringify(acts.slice(0, 15)));
+  },
+
+  getWeeklyProgram(): WeeklyProgram | null {
+    const data = storageGet(STORAGE_KEY_WEEKLY_PROGRAM);
+    if (!data) return null;
+    try {
+      return JSON.parse(data);
+    } catch {
+      return null;
+    }
+  },
+
+  saveWeeklyProgram(program: WeeklyProgram): void {
+    storageSet(STORAGE_KEY_WEEKLY_PROGRAM, JSON.stringify(program));
+  },
+
+  deleteWeeklyProgram(): void {
+    storageRemove(STORAGE_KEY_WEEKLY_PROGRAM);
+  },
+
+  getCompletedSessionIds(): string[] {
+    const data = storageGet(STORAGE_KEY_COMPLETED_SESSION_IDS);
+    if (!data) return [];
+    try {
+      return JSON.parse(data);
+    } catch {
+      return [];
+    }
+  },
+
+  isSessionCompleted(sessionId: string): boolean {
+    return this.getCompletedSessionIds().includes(sessionId);
+  },
+
+  /**
+   * Idempotent check-and-record:
+   * Returns true if newly marked, or false if already completed (preventing duplicate XP).
+   */
+  recordCompletedSession(sessionId: string): boolean {
+    const ids = this.getCompletedSessionIds();
+    if (ids.includes(sessionId)) {
+      return false; // Already recorded
+    }
+    ids.push(sessionId);
+    storageSet(STORAGE_KEY_COMPLETED_SESSION_IDS, JSON.stringify(ids));
+    return true;
   },
 
   getCompletedWorkoutsCount(): number {
-    if (!this.isReady()) return 0;
-    const val = localStorage.getItem(STORAGE_KEY_COMPLETED_WORKOUTS_COUNT);
+    const val = storageGet(STORAGE_KEY_COMPLETED_WORKOUTS_COUNT);
     return val ? parseInt(val, 10) : 0;
   },
 
   incrementCompletedWorkoutsCount(): number {
     const count = this.getCompletedWorkoutsCount() + 1;
-    if (this.isReady()) {
-      localStorage.setItem(STORAGE_KEY_COMPLETED_WORKOUTS_COUNT, count.toString());
-    }
+    storageSet(STORAGE_KEY_COMPLETED_WORKOUTS_COUNT, count.toString());
     return count;
   },
 
+  isOnboardingCompleted(): boolean {
+    const val = storageGet(STORAGE_KEY_ONBOARDING_COMPLETED);
+    return val === 'true';
+  },
+
+  setOnboardingCompleted(completed: boolean): void {
+    storageSet(STORAGE_KEY_ONBOARDING_COMPLETED, completed ? 'true' : 'false');
+  },
+
+  getUserPreferences(): UserPreferences | null {
+    const data = storageGet(STORAGE_KEY_USER_PREFERENCES);
+    if (!data) return null;
+    try {
+      return JSON.parse(data);
+    } catch {
+      return null;
+    }
+  },
+
+  saveUserPreferences(prefs: UserPreferences): void {
+    storageSet(STORAGE_KEY_USER_PREFERENCES, JSON.stringify(prefs));
+  },
+
   resetAll(): void {
-    if (!this.isReady()) return;
-    localStorage.removeItem(STORAGE_KEY_XP);
-    localStorage.removeItem(STORAGE_KEY_HABITS);
-    localStorage.removeItem(STORAGE_KEY_COMPLETIONS);
-    localStorage.removeItem(STORAGE_KEY_WORKOUTS);
-    localStorage.removeItem(STORAGE_KEY_PROGRAMS);
-    localStorage.removeItem(STORAGE_KEY_RECENT_ACTIVITY);
-    localStorage.removeItem(STORAGE_KEY_COMPLETED_WORKOUTS_COUNT);
+    storageRemove(STORAGE_KEY_XP);
+    storageRemove(STORAGE_KEY_HABITS);
+    storageRemove(STORAGE_KEY_COMPLETIONS);
+    storageRemove(STORAGE_KEY_WORKOUTS);
+    storageRemove(STORAGE_KEY_PROGRAMS);
+    storageRemove(STORAGE_KEY_WEEKLY_PROGRAM);
+    storageRemove(STORAGE_KEY_COMPLETED_SESSION_IDS);
+    storageRemove(STORAGE_KEY_RECENT_ACTIVITY);
+    storageRemove(STORAGE_KEY_COMPLETED_WORKOUTS_COUNT);
+    storageRemove(STORAGE_KEY_ONBOARDING_COMPLETED);
+    storageRemove(STORAGE_KEY_USER_PREFERENCES);
   },
 };

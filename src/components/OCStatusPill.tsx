@@ -14,10 +14,10 @@ export const OCStatusPill: React.FC<OCStatusPillProps> = ({
   className = '',
 }) => {
   const variantStyles = {
-    SUCCESS: 'bg-[#6FA876]/20 text-[#6FA876] border border-[#6FA876]/30',
-    WARNING: 'bg-[#D4A548]/20 text-[#D4A548] border border-[#D4A548]/30',
-    ERROR: 'bg-[#C7584F]/20 text-[#C7584F] border border-[#C7584F]/30',
-    INFO: 'bg-[#7C5CFF]/20 text-[#7C5CFF] border border-[#7C5CFF]/30',
+    SUCCESS: 'bg-[#8B5CF6]/15 text-[#8B5CF6] border border-[#8B5CF6]/30 font-space',
+    WARNING: 'bg-[#8B5CF6]/15 text-[#8B5CF6] border border-[#8B5CF6]/30 font-space',
+    ERROR: 'bg-white/10 text-white/80 border border-white/20 font-space',
+    INFO: 'bg-[#8B5CF6]/15 text-[#8B5CF6] border border-[#8B5CF6]/30 font-space',
   }[variant];
 
   return (

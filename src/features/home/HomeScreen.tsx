@@ -203,7 +203,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                       {periodDoneCount}/{periodTasks.length} COMPLETED
                     </span>
                     {periodAllDone && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_#34D399]" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#8B5CF6] shadow-[0_0_6px_#8B5CF6]" />
                     )}
                   </div>
                 </div>

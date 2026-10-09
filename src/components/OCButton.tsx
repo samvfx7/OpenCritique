@@ -18,10 +18,10 @@ export const OCButton: React.FC<OCButtonProps> = ({
   ...rest
 }) => {
   const variantStyles = {
-    PRIMARY: 'bg-[#7C5CFF] text-[#F5F3F8] hover:bg-[#6b47ff] active:bg-[#5e38f5] shadow-md shadow-[#7C5CFF]/20',
-    SECONDARY: 'bg-[#18161E] text-[#F5F3F8] hover:bg-[#211E29] border border-[#2A2733]',
-    TERTIARY: 'bg-transparent text-[#7C5CFF] hover:bg-[#7C5CFF]/10',
-    DESTRUCTIVE: 'bg-[#C7584F] text-[#F5F3F8] hover:bg-[#b8483f]',
+    PRIMARY: 'bg-[#8B5CF6] text-white hover:bg-[#7C3AED] active:bg-[#6D28D9] shadow-md shadow-[#8B5CF6]/20 font-space',
+    SECONDARY: 'bg-[#121214] text-white hover:bg-[#18181B] border border-white/10 font-space',
+    TERTIARY: 'bg-transparent text-[#8B5CF6] hover:bg-[#8B5CF6]/10 font-space',
+    DESTRUCTIVE: 'bg-white/10 text-white hover:bg-white/20 border border-white/15 font-space',
   }[variant];
 
   return (

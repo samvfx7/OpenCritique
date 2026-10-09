@@ -28,7 +28,7 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
       const { difficulty: recommendedDifficulty } = analyzeHabit(name);
       setDifficulty(recommendedDifficulty);
       setIsAnalyzing(false);
-    }, 600); // Simulate AI analysis latency
+    }, 500);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -54,31 +54,31 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
   ];
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200">
-      <div className="w-full max-w-sm bg-[#121214] border border-white/10 rounded-t-[28px] sm:rounded-[28px] p-6 shadow-2xl font-geist">
+    <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200">
+      <div className="w-full max-w-sm bg-[#121214] border border-white/10 rounded-t-[28px] sm:rounded-[28px] p-6 shadow-2xl font-sans">
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-5">
+        <div className="flex items-center justify-between pb-3.5 border-b border-white/10 mb-4">
           <div>
-            <div className="font-space text-[0.6rem] uppercase tracking-[0.2em] text-[#8B5CF6] font-bold">
+            <div className="font-mono text-[0.6rem] uppercase tracking-[0.2em] text-[#8B5CF6] font-bold">
               NEW PROTOCOL
             </div>
-            <h2 className="text-xl font-bold text-white tracking-tight mt-0.5">
+            <h2 className="text-xl font-display font-bold text-white tracking-tight mt-0.5">
               Add Daily Habit
             </h2>
           </div>
 
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/60 hover:text-white transition-colors cursor-pointer"
+            className="w-7 h-7 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/60 hover:text-white transition-colors cursor-pointer"
           >
-            <X size={16} />
+            <X size={15} />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           {/* Name input */}
           <div className="flex flex-col gap-1.5">
-            <label className="font-space text-[0.65rem] uppercase tracking-wider text-white/60">
+            <label className="font-mono text-[0.65rem] uppercase tracking-wider text-white/50">
               Habit Name
             </label>
             <input
@@ -94,16 +94,16 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
               type="button"
               onClick={handleAnalyze}
               disabled={isAnalyzing || !name.trim()}
-              className="flex items-center gap-1.5 font-space text-[0.6rem] uppercase tracking-wider text-[#8B5CF6] hover:text-white mt-1.5 cursor-pointer disabled:opacity-50"
+              className="flex items-center gap-1.5 font-mono text-[0.6rem] uppercase tracking-wider text-[#8B5CF6] hover:text-white mt-1 cursor-pointer disabled:opacity-40"
             >
               <Sparkles size={12} />
-              {isAnalyzing ? 'Analyzing...' : 'Smart Analyze Difficulty & XP'}
+              <span>{isAnalyzing ? 'Analyzing...' : 'Smart Analyze Difficulty & XP'}</span>
             </button>
           </div>
 
           {/* Time of Day selection */}
           <div className="flex flex-col gap-1.5">
-            <label className="font-space text-[0.65rem] uppercase tracking-wider text-white/60">
+            <label className="font-mono text-[0.65rem] uppercase tracking-wider text-white/50">
               Time of Day
             </label>
             <div className="grid grid-cols-2 gap-2">
@@ -121,7 +121,7 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
                   <span className={timeOfDay === opt.key ? 'text-[#8B5CF6]' : 'text-white/40'}>
                     {opt.icon}
                   </span>
-                  <span className="font-space text-xs">{opt.label}</span>
+                  <span className="font-sans text-xs">{opt.label}</span>
                 </button>
               ))}
             </div>
@@ -129,7 +129,7 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
 
           {/* Difficulty / XP Tier */}
           <div className="flex flex-col gap-1.5">
-            <label className="font-space text-[0.65rem] uppercase tracking-wider text-white/60">
+            <label className="font-mono text-[0.65rem] uppercase tracking-wider text-white/50">
               Intensity & XP Reward
             </label>
             <div className="grid grid-cols-2 gap-2">
@@ -145,7 +145,7 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
                   }`}
                 >
                   <span className="text-xs">{opt.label}</span>
-                  <span className="font-space text-[0.65rem] font-bold text-[#8B5CF6]">
+                  <span className="font-mono text-[0.65rem] font-bold text-[#8B5CF6]">
                     +{opt.xp} XP
                   </span>
                 </button>
@@ -158,16 +158,16 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-3.5 rounded-[12px] bg-white/5 hover:bg-white/10 text-xs font-semibold text-white/60 hover:text-white cursor-pointer transition-colors"
+              className="flex-1 py-3 rounded-[12px] bg-white/5 hover:bg-white/10 text-xs font-semibold text-white/60 hover:text-white cursor-pointer transition-colors"
             >
               Cancel
             </button>
 
             <button
               type="submit"
-              className="flex-1 py-3.5 rounded-[12px] bg-[#8B5CF6] hover:bg-[#7C3AED] active:scale-[0.99] text-xs font-bold text-white flex items-center justify-center gap-1.5 cursor-pointer shadow-lg shadow-[#8B5CF6]/25 transition-all"
+              className="flex-1 py-3 rounded-[12px] bg-[#8B5CF6] hover:bg-[#7C3AED] active:scale-[0.99] font-mono text-xs font-bold text-white flex items-center justify-center gap-1.5 cursor-pointer shadow-lg shadow-[#8B5CF6]/25 transition-all"
             >
-              <Plus size={15} />
+              <Plus size={14} />
               <span>Add Protocol</span>
             </button>
           </div>

@@ -12,6 +12,7 @@ interface ProfileScreenProps {
   completedWorkoutsCount: number;
   completedHabitsCount: number;
   onResetData: () => void;
+  onEditPreferences?: () => void;
 }
 
 export const ProfileScreen: React.FC<ProfileScreenProps> = ({
@@ -19,6 +20,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   completedWorkoutsCount,
   completedHabitsCount,
   onResetData,
+  onEditPreferences,
 }) => {
   const [activeModal, setActiveModal] = useState<'RANKS' | 'LEADERBOARD' | 'HISTORY' | 'MILESTONES' | null>(null);
   const rankInfo = getRankForXp(totalXp);
@@ -128,7 +130,41 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
             </div>
             <ChevronRight size={16} className="text-white/40 group-hover:text-white transition-colors" />
           </button>
+
+          {onEditPreferences && (
+            <>
+              <div className="w-full h-[1px] bg-white/10" />
+              <button
+                onClick={onEditPreferences}
+                className="w-full py-3.5 flex items-center justify-between text-left group cursor-pointer"
+              >
+                <div className="flex flex-col">
+                  <span className="text-sm font-semibold text-white group-hover:text-[#8B5CF6] transition-colors">
+                    Training Preferences & Program
+                  </span>
+                  <span className="text-xs text-white/50 mt-0.5">
+                    Reconfigure goals, equipment, and weekly splits
+                  </span>
+                </div>
+                <ChevronRight size={16} className="text-white/40 group-hover:text-white transition-colors" />
+              </button>
+            </>
+          )}
         </div>
+      </div>
+
+      {/* Danger Zone: Reset Data */}
+      <div className="mt-6 flex flex-col items-center">
+        <button
+          onClick={() => {
+            if (window.confirm('Reset all OpenCritique data and restart first-launch onboarding?')) {
+              onResetData();
+            }
+          }}
+          className="text-xs text-white/30 hover:text-red-400 font-space transition-colors cursor-pointer py-2"
+        >
+          Reset All Data & Onboarding
+        </button>
       </div>
 
       {/* Rank Progression Ascension Ladder Modal */}
